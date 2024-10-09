@@ -26,18 +26,11 @@ jobs:
             --project ${{ github.event.repository.name }} \
             --token ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 4: Configure git and commit the updated CHANGELOG.md
+      # Step 4: Commit and push the updated CHANGELOG.md using the GitHub Actions bot
       - name: Commit and push CHANGELOG.md
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md for release ${{ github.event.release.tag_name }}"
-          git push origin main
+          git push origin HEAD
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Step 5: Output the latest release info (Optional)
-      - name: Output Release Info
-        run: |
-          echo "Released version: ${{ github.event.release.tag_name }}"
