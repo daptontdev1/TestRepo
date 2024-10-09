@@ -13,16 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Update CHANGELOG.md using a third-party tool like github-changelog-generator
-      - name: Generate CHANGELOG.md
+      # Step 2: Install the github_changelog_generator gem
+      - name: Install github_changelog_generator
         run: |
           gem install github_changelog_generator
+
+      # Step 3: Generate CHANGELOG.md
+      - name: Generate CHANGELOG.md
+        run: |
           github_changelog_generator \
             --user ${{ github.repository_owner }} \
             --project ${{ github.event.repository.name }} \
             --token ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 3: Commit the updated CHANGELOG.md
+      # Step 4: Configure git and commit the updated CHANGELOG.md
       - name: Commit and push CHANGELOG.md
         run: |
           git config --global user.email "action@github.com"
@@ -30,3 +34,10 @@ jobs:
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md for release ${{ github.event.release.tag_name }}"
           git push origin HEAD
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 5: Output the latest release info (Optional)
+      - name: Output Release Info
+        run: |
+          echo "Released version: ${{ github.event.release.tag_name }}"
